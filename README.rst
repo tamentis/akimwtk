@@ -5,11 +5,13 @@ This intend to be a set of python script to access the state of the game
 while playing. While the initial scripts will be aimed at gathering data, the
 ultimate goal is to write a learning bot using genetic algorithms.
 
-requirements
+Requirements
 ============
  - Dega 1.16-pre1
  - Python 2.5 (and dev headers/tools)
 
+Dega Compilation
+================
 In order to compile pydega.so, you need to type::
 
     make pydega.so

@@ -1,3 +1,11 @@
+"""
+Graphical Debugger for Alex Kidd in Miracle World
+
+This file is loosely based on the ``memory.py`` example in the Dega source
+code. It is a compilation of tools to understand the game context of an
+Alex Kidd game.
+"""
+
 import math
 import sys
 import Tkinter
@@ -8,13 +16,21 @@ import tkMessageBox
 import tkFileDialog
 from pydega import *
 
+# This is the size of the in-memory level buffer, no the size of the
+# actual screen.
 columns = 32
 lines = 28
+
+# Size of one level-sprite
 size = 8
+
+# Size of the actualy display window
 im_width = columns * size
 im_height = 24 * size
 
-
+# Colors used for each individual level-sprite types. This could be replaced
+# later on by the real chunks of graphic from the game but the purpose of this
+# project, color blocks will be enough.
 colors = {
     0x00: (0, 0, 192),
     0x35: (0, 0, 192),
@@ -132,21 +148,33 @@ colors = {
     # 0x89: (255, 0, 0),
 }
 
+
 def askhex(prompt, validate = lambda v: None):
+    """Prompt for an hexadecimal value."""
     v = None
     while v == None:
-        s = tkSimpleDialog.askstring("Enter value", prompt+"\nFor hexadecimal prefix with 0x")
+        s = tkSimpleDialog.askstring("Enter value", prompt + 
+                "\nFor hexadecimal prefix with 0x")
         if s == None:
             break
         try:
             v = int(eval(s))
             validate(v)
         except:
-            tkMessageBox.showerror("Invalid Value", "Could not parse value: %s (%s)" % (s, sys.exc_info()[1]))
+            tkMessageBox.showerror("Invalid Value", 
+                    "Could not parse value: %s (%s)" % (s, sys.exc_info()[1]))
             v = None
     return v
 
+
 class TerrainView(Tkinter.Canvas):
+
+    """
+    Tk Widget displaying the current representation of the level in-memory.
+
+    This is not a view of the full level (in ROM) but the representation of
+    what the player see from the RAM state.
+    """
     
     def __init__(self, master, realdata, offset):
         self.realdata = realdata
@@ -164,6 +192,7 @@ class TerrainView(Tkinter.Canvas):
         self.refresh()
 
     def get_sprite_types(self):
+        """Returns an array of bytes representing the terrain types."""
         scroll = math.floor(self.realdata[0x00be] / 8.0)
         offset = self.offset + scroll * columns * 2
         start = offset
@@ -177,12 +206,18 @@ class TerrainView(Tkinter.Canvas):
         return (chunk_a + chunk_b)[:(lines * columns)]
 
     def get_color_from_type(self, type):
+        """Return an RGB tuple for a given terrain sprite type."""
         if type not in colors:
             print("UNKNOWN: 0x%02X" % type)
             type = 0
         return colors[type]
 
     def refresh(self):
+        """Refresh the view if needed.
+
+        This will only trigger the full refresh if the data is different from
+        the previous pass.
+        """
         sprite_types = self.get_sprite_types()
         if self.previous_types == sprite_types:
             return
@@ -197,7 +232,11 @@ class TerrainView(Tkinter.Canvas):
         self.tkimage.paste(self.im)
         self.previous_types = sprite_types
 
+
+
 class HexView(Tkinter.Canvas):
+
+    """This is just a simple hexadecimal view of the RAM."""
 
     def getdata(self):
         return getattr(self.data[0], self.data[1])
@@ -265,7 +304,12 @@ class HexView(Tkinter.Canvas):
         self.hexitems = []
         self.builditems()
 
+
 class Trainer:
+
+    """
+    Tool allowing the comparison of the whole RAM to find changing values.
+    """
 
     def getdata(self):
         return getattr(self.data[0], self.data[1])
@@ -313,10 +357,9 @@ class Trainer:
 
 class MemoryViewer:
 
-    def __init__(self, master):
-        # self.frame = Frame(master)
-        # self.frame.pack()
+    """Main application class binding all the widgets."""
 
+    def __init__(self, master):
         self.frame_ram = tuple(dega.ram)
         self.frame_update = False
 
@@ -456,6 +499,7 @@ class MemoryViewer:
     def post_frame(self):
         self.frame_ram = tuple(dega.ram)
         self.frame_update = True
+
 
 root = Tkinter.Tk()
 app = MemoryViewer(root)
