@@ -1,0 +1,109 @@
+Addresses
+=========
+
+    0x0030        Money        (multiply it by 10)
+    
+
+    0xC0BE        Scroll position
+    
+
+    0xC100        Music related addresses
+      ..  
+    0xC110        Turn this to 0 to mute the music
+      ..  
+    
+
+    0xC300        Game entities (player, enemies)
+      ..  
+    0xC600
+
+
+    0xC706        Sprites? First 14 bytes are Alex, then I assume enemies.
+                Changing these values doesn't seem to update anything
+                (constantly refreshed?)
+
+    0xC800      Looks like all the blocks are here by types. Each line is
+                64 bytes wide. Looks like each 8x8 sprite is represented by
+                two bytes, so that's a total of 32 sprites on each lines.
+
+                So this is a 32x24 sprites screen.
+
+                The first byte seems to be the type of sprite.
+                The second the type of block.
+
+
+Game Entities
+=============
+Each is 16 bytes
+Offset:
+    0x00 Type
+            01 = Alex
+            02 = Sound?
+            05 = Explosion?
+            06 = Glitchy?
+            07 = Same
+            08 = ?
+            0E = Frozen Alex
+            0F = Frozen Alex
+            2D = Crow Going Left
+            2E = Big Fish Going Left
+            2F = Jumping Frog (on the ground)
+            30 = Small Fish Going Left
+            31 = Flying Crap
+            33 = Crow Going Right
+            34 = Small Fish Going Right
+            35 = Big Fish Going Right
+            37 = Jumping Frog
+            4F = Ghost!
+            56 = Bread/Rice Crumb
+    0x0C Position X
+    0x0E Position Y
+    0x10 Speed / Direction (Read Only) ?
+    0x1A Static (1), Moving (2), Falling (3) ?
+
+
+Sprite Types
+============
+    0x27-0x2E   Clouds
+    0x09-0x0C   Star box
+    0x35-0x38   Cleared block
+
+Block Types
+===========
+    0x80        Solid
+    0xE0        Money Box
+
+Inputs
+======
+input[0] & 1 = up
+input[0] & 2 = down
+input[0] & 4 = left
+input[0] & 8 = right
+
+input[0] & 16 = A
+input[0] & 32 = B
+
+Block Contents
+==============
+-- BYTE 1 + E000E0--
+0x00 = empty
+0x01 = shock
+0x02 = shock
+0x03 = shock
+0x04 = shock
+0x05 = ring, ghost, life
+0x06 = ring, ghost, life
+0x07 = ring, ghost, life
+0x08 = ring, ghost, life
+0x09 = $100 or $200
+0x0A = $100 or $200
+0x0B = $100 or $200
+0x0C = $100 or $200
+0x0D = Hit hamburger -> next level!
+0x0E = Nothing
+0x0F = Nothing
+0x10 = Crash
+0x11 = Nothing
+0x12 = Crash
+
+vim:ts=4 expandtab:
